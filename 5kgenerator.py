@@ -20,6 +20,7 @@ path = config.get('repo', 'path')
 
 print (key)
 
+
 #source ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"" + name + "\", \"private\": " + sourcePrivate + "  }' https://api.github.com/user/repos "
 
 #stage ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"stage." + name + "\", \"private\": " + stagePrivate + " }' https://api.github.com/user/repos "
