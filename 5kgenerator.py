@@ -1,31 +1,31 @@
-import configparser
 import os
 import subprocess
 import git
 from git import Repo
 import sys
 import shutil
-import glob
+import json
 import yaml
 import regex as re
 
-# Parsing
-config = configparser.ConfigParser()
-config.read('./config.ini')
 
-# Variables from .ini
-key = config.get('repo', 'key')
-domain = config.get('repo', 'domain')
-sourcePrivate = config.get('repo', 'sourcePrivate')
-stagePrivate = config.get('repo', 'stagePrivate')
-prodPrivate = config.get('repo', 'prodPrivate')
-templateUser = config.get('repo', 'templateUser')
-templateName = config.get('repo', 'templateName')
-themeUser = config.get('repo', 'themeUser')
-themeName = config.get('repo', 'themeName')
-user = config.get('repo', 'user')
-path = config.get('repo', 'path')
-email = config.get('repo', 'email')
+#Parsing
+file = open('./config.yml', 'r')
+cfg = yaml.load(file, Loader=yaml.FullLoader)
+
+#Variables from .yml
+key = cfg['repo']['key']
+domain = cfg['repo']['domain']
+sourcePrivate = cfg['repo']['sourcePrivate']
+stagePrivate = cfg['repo']['stagePrivate']
+prodPrivate = cfg['repo']['prodPrivate']
+templateUser = cfg['repo']['templateUser']
+templateName = cfg['repo']['templateName']
+themeUser = cfg['repo']['themeUser']
+themeName = cfg['repo']['themeName']
+user = cfg['repo']['user']
+path = cfg['repo']['path']
+email = cfg['repo']['email']
 
 
 #Create repos
@@ -37,7 +37,8 @@ os.system(source)
 os.system(stage)
 os.system(prod)
 
-# Clone repos and where to place them
+
+#Clone repos and where to place them
 path  = ""+ path +""
 repo = "git clone git@github.com:" + user + "/" + domain + ""
 temp = "git clone git@github.com:" + templateUser + "/" + templateName + ".git"
@@ -49,12 +50,14 @@ os.system(repo) # Cloning the source repo
 os.system(temp) # Cloning template repo
 os.system(them) # Cloning theme repo
 
-# Directories for template, theme and source repo
+
+#Directories for template, theme and source repo
 source = "" + path + "/" + templateName + "/"
 src_dir = "" + path + "/" + themeName + "/"
 dest_dir = "" + path + "/" + domain +"/"
 
-# Move files from template into source folder
+
+#Move files from template into source folder
 files = os.listdir(source)
 print('merging template')
 for f in files:
@@ -81,6 +84,7 @@ def move_over(src_dir, dest_dir):
 
 move_over(src_dir, dest_dir)
 
+
 #Change CNAME files
 print('Creating CNAME files')
 def CNAMES():
@@ -94,7 +98,8 @@ def CNAMES():
 
 CNAMES()
 
-# Change CI config
+
+#Change CI config
 print('Changing Circle Ci files')
 def ciConfig():
 
@@ -126,6 +131,7 @@ def ciConfig():
 
 
 ciConfig()
+
 
 #Add, commit and push template to source repo
 gitRepo = "" + path + "/" + domain +"/"
