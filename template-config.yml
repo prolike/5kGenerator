@@ -10,7 +10,10 @@ repo:
   path: #/path/to/store/your/cloned/repos
   templateUser: #GitHubUser
   templateName: #GitHubRepo
+  theme: #true or false. No ''
   themeUser: #GitHubUser
   themeName: #GitHubRepo
+  circle: #true or false. No ''. This will still edit the config files but not add or build the project on circle ci
   citoken: #your circle ci token. Leave empty if you desire to do this step manually
   cienvname: #your circle ci environment name ussually PHLOW_GHTOKEN
+  htmlproofer: #true or false. No ''
