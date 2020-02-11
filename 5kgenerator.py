@@ -33,12 +33,12 @@ ciEnvName = cfg['repo']['cienvname']
 
 #Create repos
 source ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"" + domain + "\", \"private\": " + sourcePrivate + "  }' https://api.github.com/user/repos "
-stage ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"stage." + domain + "\", \"private\": " + stagePrivate + " }' https://api.github.com/user/repos "
-prod ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"www." + domain + "\", \"private\": " + prodPrivate + " }' https://api.github.com/user/repos "
+#stage ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"stage." + domain + "\", \"private\": " + stagePrivate + " }' https://api.github.com/user/repos "
+#prod ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"www." + domain + "\", \"private\": " + prodPrivate + " }' https://api.github.com/user/repos "
 
 os.system(source)
-os.system(stage)
-os.system(prod)
+#os.system(stage)
+#os.system(prod)
 
 
 #Clone repos and where to place them
@@ -73,7 +73,7 @@ print('merging theme')
 def move_over(src_dir, dest_dir):
     fileList = os.listdir(src_dir)
     for i in fileList:
-        if i == ".git":
+        if i == ".git" or i.endswith(".gemspec") or i == "Gemfile":
             continue
         src = os.path.join(src_dir, i)
         dest = os.path.join(dest_dir, i)
