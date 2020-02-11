@@ -7,13 +7,14 @@ import shutil
 import json
 import yaml
 import regex as re
+import requests
 
 
-#Parsing
+# Parsing
 file = open('./config.yml', 'r')
 cfg = yaml.load(file, Loader=yaml.FullLoader)
 
-#Variables from .yml
+# Variables from .yml
 key = cfg['repo']['key']
 domain = cfg['repo']['domain']
 sourcePrivate = cfg['repo']['sourcePrivate']
@@ -26,6 +27,8 @@ themeName = cfg['repo']['themeName']
 user = cfg['repo']['user']
 path = cfg['repo']['path']
 email = cfg['repo']['email']
+citoken = cfg['repo']['citoken']
+ciEnvName = cfg['repo']['cienvname']
 
 
 #Create repos
@@ -116,7 +119,6 @@ def ciConfig():
         filedata = re.sub(pattern, f'{email}', filedata)
 
 
-
         pattern = re.compile(r'(?<=prod-deploy:(\n.*){0,7}PLAY_TARGET_GH_REPO:\s+)\S+')
         filedata = re.sub(pattern, f'{user}/www.{domain}', filedata)
 
@@ -126,9 +128,11 @@ def ciConfig():
         pattern = re.compile(r'(?<=prod-deploy:(\n.*){0,7}PLAY_USER_EMAIL:\s+)\S+')
         filedata = re.sub(pattern, f'{email}', filedata)
 
+        pattern = re.compile(r'(?<=jekyll-build:(\n.*){0,7}image:\s+)\S+')
+        filedata = re.sub(pattern, f'carolineolivia94/jekyll-plus-plus', filedata)
+
     with open("" + path + "/" "" + domain + "/.circleci/config.yml", 'w') as file:
         file.write(filedata)
-
 
 ciConfig()
 
@@ -149,3 +153,24 @@ def git_push():
         print('Some error occured while pushing the code')
 
 git_push()
+
+# def followci():
+#     url = f"https://circleci.com/api/v1.1/project/github/{user}/{domain}/follow?circle-token={citoken}"
+#     resp = requests.post(url)
+#     print('following project')
+
+# followci()
+
+# def addci():
+#     if citoken != "":
+#         url = f"https://circleci.com/api/v1.1/project/github/{user}/{domain}/envvar?circle-token={citoken}"
+#         data = {
+#         "name": ciEnvName,
+#         "value": key
+#         }
+#         resp = requests.post(url, data=data)
+#         print('project added to circle ci')
+#     else:
+#         print('skipped adding token to circle ci, please add manually')
+
+# addci()
