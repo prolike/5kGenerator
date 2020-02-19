@@ -161,30 +161,29 @@ ciConfig()
 
 
 #Add, commit and push template to source repo
-if circle == True:
-    gitRepo = "" + path + "/" + domain +"/"
-    commitMSG = f'Copy {templateName} and {themeName} to {domain}'
+gitRepo = "" + path + "/" + domain +"/"
+commitMSG = f'Copy {templateName} and {themeName} to {domain}'
 
-    def git_push():
-        print('pushing to source repo')
-        try:
-            os.system(f"git config --global user.email {email} ")
-            os.system(f"git config --global user.name \"automated setup\" ")
-            ##os.system(f"cd {domain} && git push --set-upstream origin master")
-            os.system(f"cd {domain} && pwd")
-            os.system("pwd")
-            os.system(f"cd {domain} && git remote rm origin")
-            os.system(f"cd {domain} && git remote add origin https://{user}:{key}@github.com/{user}/{domain}.git")
-            os.system(f"cd {domain} && git add . && git commit -m \"{commitMSG}\" && git push origin master")
-            # repo = Repo(gitRepo)
-            # repo.git.add('--all')
-            # repo.git.commit('-m', '' + commitMSG + '')
-            # origin = repo.remote(name='origin')
-            # origin.push()
-        except:
-            print('Some error occured while pushing the code')
+def git_push():
+    print('pushing to source repo')
+    try:
+        os.system(f"git config --global user.email {email} ")
+        os.system(f"git config --global user.name \"automated setup\" ")
+        ##os.system(f"cd {domain} && git push --set-upstream origin master")
+        os.system(f"cd {domain} && pwd")
+        os.system("pwd")
+        os.system(f"cd {domain} && git remote rm origin")
+        os.system(f"cd {domain} && git remote add origin https://{user}:{key}@github.com/{user}/{domain}.git")
+        os.system(f"cd {domain} && git add . && git commit -m \"{commitMSG}\" && git push origin master")
+        # repo = Repo(gitRepo)
+        # repo.git.add('--all')
+        # repo.git.commit('-m', '' + commitMSG + '')
+        # origin = repo.remote(name='origin')
+        # origin.push()
+    except:
+        print('Some error occured while pushing the code')
 
-    git_push()
+git_push()
 
 if circle == True:
     def followci():

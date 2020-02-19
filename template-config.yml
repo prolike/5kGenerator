@@ -1,4 +1,4 @@
-#Create a copy of this file and name it config.yml
+#Rename this file to config.yml or rename it to config.ym
 repo:
   key: #your personal access token (one time use)
   domain: #your repo name ending with a tld (.dk .io .com etc)
@@ -7,7 +7,7 @@ repo:
   prodPrivate: #true of false surrounded by ''
   user: #the GitHub user you are logged in as. This is needed to clone the source repo you are making
   email: #your email for circle ci
-  path: #/path/to/store/your/cloned/repos
+  path: /app #/path/to/store/your/cloned/repos
   templateUser: #GitHubUser
   templateName: #GitHubRepo
   theme: #true or false. No ''
@@ -15,5 +15,5 @@ repo:
   themeName: #GitHubRepo
   circle: #true or false. No ''. This will still edit the config files but not add or build the project on circle ci
   citoken: #your circle ci token. Leave empty if you desire to do this step manually
-  cienvname: #your circle ci environment name ussually PHLOW_GHTOKEN
+  cienvname: PHLOW_GHTOKEN #your circle ci environment name ussually PHLOW_GHTOKEN
   htmlproofer: #true or false. No ''
