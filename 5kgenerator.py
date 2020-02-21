@@ -13,8 +13,10 @@ from git import Repo
 
 
 # Parsing
-file = open('./config.yml', 'r')
-cfg = yaml.load(file, Loader=yaml.FullLoader)
+
+cfg = None
+with open('./config.yml', 'r') as f:
+    cfg = yaml.load(f, Loader=yaml.FullLoader)
 
 # Variables from .yml
 key = cfg['repo']['key']
@@ -109,11 +111,11 @@ if theme:
 #Change CNAME files
 print('Creating CNAME files')
 def CNAMES():
-    f = open("" + path + "/" "" + domain + "/" "CNAME", "w+")
+    f = with open("" + path + "/" "" + domain + "/" "CNAME", "w+")
     f.write("www." + domain + "")
     f.close()
 
-    f = open("" + path + "/" "" + domain + "/" "CNAME.stage", "w+")
+    f = with open("" + path + "/" "" + domain + "/" "CNAME.stage", "w+")
     f.write("stage." + domain + "")
     f.close()
 
