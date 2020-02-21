@@ -53,14 +53,11 @@ os.system(f"git config --global ghi.token {key}")
 
 #Clone repos and where to place them
 path  = ""+ path +""
-print(path)
 repo = "git clone https://" + key + "@github.com/" + user + "/" + domain + ".git"
 temp = "git clone https://" + key + "@github.com/" + templateUser + "/" + templateName + ".git"
 if theme:
     them = "git clone https://" + key + "@github.com/" + themeUser + "/" + themeName + ".git"
 
-print(repo)
-print(temp)
 
 #os.system("sshpass -p your_password ssh user_name@your_localhost")
 os.chdir(path) # Specifying the path where the cloned project needs to be copied
@@ -78,7 +75,6 @@ dest_dir = "" + path + "/" + domain +"/"
 
 
 #Move files from template into source folder
-print(os.listdir(path))
 files = os.listdir(source)
 print('merging template')
 for f in files:
@@ -215,6 +211,5 @@ st = os.stat('mk-phlow-defaults.sh')
 os.chmod('mk-phlow-defaults.sh', st.st_mode | stat.S_IEXEC)
 
 
-print(os.path.abspath(os.getcwd()))
 subprocess.call(f"{os.path.abspath(os.getcwd())}/rm-gh-defaults.sh", cwd=f"{path}/{domain}/")
 subprocess.call(f"{os.path.abspath(os.getcwd())}/mk-phlow-defaults.sh", cwd=f"{path}/{domain}/")
