@@ -13,12 +13,15 @@ from git import Repo
 
 
 # Parsing
-
 cfg = None
 with open('./config.yml', 'r') as f:
     cfg = yaml.load(f, Loader=yaml.FullLoader)
 
-# Variables from .yml
+def main():
+    setup()
+    createRepositories()
+    print("python main function")
+
 key = cfg['repo']['key']
 domain = cfg['repo']['domain']
 sourcePrivate = cfg['repo']['sourcePrivate']
@@ -37,35 +40,24 @@ htmlproofer = cfg['repo']['htmlproofer']
 theme = cfg['repo']['theme']
 circle = cfg['repo']['circle']
 
-
-
+def setup():
+    os.system(f"git config --global ghi.token {key}")
 
 #Create repos
-source ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"" + domain + "\", \"private\": " + sourcePrivate + "  }' https://api.github.com/user/repos "
-stage ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"stage." + domain + "\", \"private\": " + stagePrivate + " }' https://api.github.com/user/repos "
-prod ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"www." + domain + "\", \"private\": " + prodPrivate + " }' https://api.github.com/user/repos "
-
-os.system(source)
-os.system(stage)
-os.system(prod)
-
-os.system(f"git config --global ghi.token {key}")
+def createRepositories():
+    pass
 
 #Clone repos and where to place them
-path  = ""+ path +""
-repo = "git clone https://" + key + "@github.com/" + user + "/" + domain + ".git"
-temp = "git clone https://" + key + "@github.com/" + templateUser + "/" + templateName + ".git"
-if theme:
-    them = "git clone https://" + key + "@github.com/" + themeUser + "/" + themeName + ".git"
-
-
-#os.system("sshpass -p your_password ssh user_name@your_localhost")
-os.chdir(path) # Specifying the path where the cloned project needs to be copied
-os.system(repo) # Cloning the source repo
-os.system(temp) # Cloning template repo
-if theme:
-    os.system(them) # Cloning theme repo
-
+def cloneRepos():
+    path  = cfg['repo']['path']
+    os.chdir(path)
+    mainRepo = f'git clone https://{key}@github.com/{cfg["repo"]["domain"]}/{cfg["repo"]["domain"]}.git'
+    templateRepo = f'git clone https://{key}@github.com/{cfg["repo"]["templateUser"]}/{cfg["repo"]["templateName"]}.git'
+    os.system(mainRepo)
+    os.system(templateRepo)
+    if cfg["repo"]["theme"]:
+        themeRepo = f"git clone https://{key}@github.com/{themeUser}/{themeName}.git"
+        os.system(themeRepo)
 
 #Directories for template, theme and source repo
 source = "" + path + "/" + templateName + "/"
@@ -119,7 +111,6 @@ CNAMES()
 #Change CI config
 print('Changing Circle Ci files')
 def ciConfig():
-
     with open("" + path + "/" "" + domain + "/.circleci/config.yml", 'r') as file:
         filedata = file.read()
 
@@ -137,7 +128,6 @@ def ciConfig():
             pattern = re.compile(r'(?<=deliver:.*(\n.*){0,50}requires:.*(\n.*){0,7}\s+)- html-proofer')
             filedata = re.sub(pattern, f'#- html-proofer', filedata)
 
-
         pattern = re.compile(r'(?<=prod-deploy:(\n.*){0,7}PLAY_TARGET_GH_REPO:\s+)\S+')
         filedata = re.sub(pattern, f'{user}/www.{domain}', filedata)
 
@@ -149,7 +139,6 @@ def ciConfig():
 
         pattern = re.compile(r'(?<=jekyll-build:(\n.*){0,7}image:\s+)\S+')
         filedata = re.sub(pattern, f'carolineolivia94/jekyll-plus-plus', filedata)
-
 
     with open("" + path + "/" "" + domain + "/.circleci/config.yml", 'w') as file:
         file.write(filedata)
@@ -213,3 +202,6 @@ os.chmod('mk-phlow-defaults.sh', st.st_mode | stat.S_IEXEC)
 
 subprocess.call(f"{os.path.abspath(os.getcwd())}/rm-gh-defaults.sh", cwd=f"{path}/{domain}/")
 subprocess.call(f"{os.path.abspath(os.getcwd())}/mk-phlow-defaults.sh", cwd=f"{path}/{domain}/")
+
+if __name__ == '__main__':
+    main()
