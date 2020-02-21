@@ -20,7 +20,15 @@ with open('./config.yml', 'r') as f:
 def main():
     setup()
     createRepositories()
-    print("python main function")
+    cloneRepos()
+    themeSetup()
+    cnames()
+    ciConfig()
+    git_push()
+    if circle:
+        followci()
+        addci()
+    labelSetup()
 
 key = cfg['repo']['key']
 domain = cfg['repo']['domain']
@@ -39,79 +47,79 @@ ciEnvName = cfg['repo']['cienvname']
 htmlproofer = cfg['repo']['htmlproofer']
 theme = cfg['repo']['theme']
 circle = cfg['repo']['circle']
+runningInDocker = cfg['repo']['runningInDocker']
 
 def setup():
     os.system(f"git config --global ghi.token {key}")
 
 #Create repos
 def createRepositories():
-    pass
+    gthUrl = 'https://api.github.com/user/repos'
+    headers = {'Authorization': 'token ' + key}
+    repoPrivate  = "{ \"name\":\"" + domain + "\", \"private\": " + sourcePrivate + "  }"
+    repoStage = "{ \"name\":\"stage." + domain + "\", \"private\": " + stagePrivate + " }"
+    repoProd = "{ \"name\":\"www." + domain + "\", \"private\": " + prodPrivate + " }"
+
+    #Create repos
+    requests.post(gthUrl, headers=headers, data=repoPrivate)
+    requests.post(gthUrl, headers=headers, data=repoStage)
+    requests.post(gthUrl, headers=headers, data=repoProd)
 
 #Clone repos and where to place them
 def cloneRepos():
-    path  = cfg['repo']['path']
+    path = cfg['repo']['path']
     os.chdir(path)
-    mainRepo = f'git clone https://{key}@github.com/{cfg["repo"]["domain"]}/{cfg["repo"]["domain"]}.git'
-    templateRepo = f'git clone https://{key}@github.com/{cfg["repo"]["templateUser"]}/{cfg["repo"]["templateName"]}.git'
+    mainRepo = f'git clone https://{key}@github.com/{user}/{domain}.git'
+    templateRepo = f'git clone https://{key}@github.com/{templateUser}/{templateName}.git'
     os.system(mainRepo)
     os.system(templateRepo)
     if cfg["repo"]["theme"]:
         themeRepo = f"git clone https://{key}@github.com/{themeUser}/{themeName}.git"
         os.system(themeRepo)
 
-#Directories for template, theme and source repo
-source = "" + path + "/" + templateName + "/"
-if theme:
-    src_dir = "" + path + "/" + themeName + "/"
-dest_dir = "" + path + "/" + domain +"/"
 
+def themeSetup():
+    #Directories for template, theme and source repo
+    source = "" + path + "/" + templateName + "/"
+    if theme:
+        src_dir = "" + path + "/" + themeName + "/"
+    dest_dir = "" + path + "/" + domain +"/"
 
-#Move files from template into source folder
-files = os.listdir(source)
-print('merging template')
-for f in files:
-    if f == ".git":
-        continue
-    shutil.move(source+f, dest_dir)
-
-if theme:
-
-    print('merging theme')
     #Move files from template into source folder
-    def move_over(src_dir, dest_dir):
-        fileList = os.listdir(src_dir)
-        for i in fileList:
-            if i == ".git" or i.endswith(".gemspec") or i == "Gemfile":
+    files = os.listdir(source)
+    print('merging template')
+    for f in files:
+        if f == ".git":
+            continue
+        shutil.move(source+f, dest_dir)
+    if theme:
+        move_over(src_dir, dest_dir)
+
+def move_over(src_dir, dest_dir):
+    fileList = os.listdir(src_dir)
+    for i in fileList:
+        if i == ".git" or i.endswith(".gemspec") or i == "Gemfile":
+            continue
+        src = os.path.join(src_dir, i)
+        dest = os.path.join(dest_dir, i)
+        if os.path.exists(dest):
+            if os.path.isdir(dest):
+                move_over(src, dest)
                 continue
-            src = os.path.join(src_dir, i)
-            dest = os.path.join(dest_dir, i)
-            if os.path.exists(dest):
-                if os.path.isdir(dest):
-                    move_over(src, dest)
-                    continue
-                else:
-                    os.remove(dest)
-            shutil.move(src, dest_dir)
+            else:
+                os.remove(dest)
+        shutil.move(src, dest_dir)
 
-    move_over(src_dir, dest_dir)
-
-
-#Change CNAME files
-print('Creating CNAME files')
-def CNAMES():
+def cnames():
     with open("" + path + "/" "" + domain + "/" "CNAME", "w+") as f:
         f.write("www." + domain + "")
 
     with open("" + path + "/" "" + domain + "/" "CNAME.stage", "w+") as f:
         f.write("stage." + domain + "")
 
-CNAMES()
-
-
 #Change CI config
-print('Changing Circle Ci files')
 def ciConfig():
-    with open("" + path + "/" "" + domain + "/.circleci/config.yml", 'r') as file:
+    with open(path + "/" + domain + "/.circleci/config.yml", 'r') as file:
         filedata = file.read()
 
         pattern = re.compile(r'(?<=stage-deploy:(\n.*){0,7}PLAY_TARGET_GH_REPO:\s+)\S+')
@@ -143,65 +151,55 @@ def ciConfig():
     with open("" + path + "/" "" + domain + "/.circleci/config.yml", 'w') as file:
         file.write(filedata)
 
-ciConfig()
-
-
 #Add, commit and push template to source repo
-gitRepo = "" + path + "/" + domain +"/"
-commitMSG = f'Copy {templateName} and {themeName} to {domain}'
 
 def git_push():
-    print('pushing to source repo')
+    gitRepo = f'{path}/{domain}/'
+    commitMSG = f'Copy {templateName} and {themeName} to {domain}'
     try:
-        os.system(f"git config --global user.email {email} ")
-        os.system(f"git config --global user.name \"automated setup\" ")
-        ##os.system(f"cd {domain} && git push --set-upstream origin master")
-        os.system(f"cd {domain} && pwd")
-        os.system("pwd")
-        os.system(f"cd {domain} && git remote rm origin")
-        os.system(f"cd {domain} && git remote add origin https://{user}:{key}@github.com/{user}/{domain}.git")
-        os.system(f"cd {domain} && git add . && git commit -m \"{commitMSG}\" && git push origin master")
-        # repo = Repo(gitRepo)
-        # repo.git.add('--all')
-        # repo.git.commit('-m', '' + commitMSG + '')
-        # origin = repo.remote(name='origin')
-        # origin.push()
-    except:
+        if runningInDocker:
+            os.system(f"git config --global user.email {email} ")
+            os.system(f"git config --global user.name \"automated setup\"")
+            os.system(f"cd {domain} && git remote rm origin")
+            os.system(f"cd {domain} && git remote add origin https://{user}:{key}@github.com/{user}/{domain}.git")
+            os.system(f"cd {domain} && git add . && git commit -m \"{commitMSG}\" && git push origin master")
+        else:
+            repo = Repo(gitRepo)
+            repo.git.add('--all')
+            repo.git.commit('-m', '' + commitMSG + '')
+            origin = repo.remote(name='origin')
+            origin.push()
+    except Exception as e:
         print('Some error occured while pushing the code')
+        print(e)
 
-git_push()
+def followci():
+    url = f"https://circleci.com/api/v1.1/project/github/{user}/{domain}/follow?circle-token={citoken}"
+    requests.post(url)
+    print('following project')
 
-if circle == True:
-    def followci():
-        url = f"https://circleci.com/api/v1.1/project/github/{user}/{domain}/follow?circle-token={citoken}"
-        resp = requests.post(url)
-        print('following project')
-
-    followci()
-
-    def addci():
-        if citoken != "":
-            url = f"https://circleci.com/api/v1.1/project/github/{user}/{domain}/envvar?circle-token={citoken}"
-            data = {
+def addci():
+    if citoken != "":
+        url = f"https://circleci.com/api/v1.1/project/github/{user}/{domain}/envvar?circle-token={citoken}"
+        data = {
             "name": ciEnvName,
             "value": key
-            }
-            resp = requests.post(url, data=data)
-            print('project added to circle ci')
-        else:
-            print('skipped adding token to circle ci, please add manually')
+        }
+        requests.post(url, data=data)
+        print('project added to circle ci')
+    else:
+        print('skipped adding token to circle ci, please add manually')
 
-    addci()
+def labelSetup():
+    st = os.stat('rm-gh-defaults.sh')
+    os.chmod('rm-gh-defaults.sh', st.st_mode | stat.S_IEXEC)
 
-st = os.stat('rm-gh-defaults.sh')
-os.chmod('rm-gh-defaults.sh', st.st_mode | stat.S_IEXEC)
-
-st = os.stat('mk-phlow-defaults.sh')
-os.chmod('mk-phlow-defaults.sh', st.st_mode | stat.S_IEXEC)
+    st = os.stat('mk-phlow-defaults.sh')
+    os.chmod('mk-phlow-defaults.sh', st.st_mode | stat.S_IEXEC)
 
 
-subprocess.call(f"{os.path.abspath(os.getcwd())}/rm-gh-defaults.sh", cwd=f"{path}/{domain}/")
-subprocess.call(f"{os.path.abspath(os.getcwd())}/mk-phlow-defaults.sh", cwd=f"{path}/{domain}/")
+    subprocess.call(f"{os.path.abspath(os.getcwd())}/rm-gh-defaults.sh", cwd=f"{path}/{domain}/")
+    subprocess.call(f"{os.path.abspath(os.getcwd())}/mk-phlow-defaults.sh", cwd=f"{path}/{domain}/")
 
 if __name__ == '__main__':
     main()
