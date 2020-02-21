@@ -37,17 +37,16 @@ htmlproofer = cfg['repo']['htmlproofer']
 theme = cfg['repo']['theme']
 circle = cfg['repo']['circle']
 
-
-
+gthUrl = 'https://api.github.com/user/repos'
+headers = {'Authorization': key}
+repoPrivate  = "{ \"name\":\"" + domain + "\", \"private\": " + sourcePrivate + "  }"
+repoStage = "{ \"name\":\"stage." + domain + "\", \"private\": " + stagePrivate + " }"
+repoProd = "{ \"name\":\"www." + domain + "\", \"private\": " + prodPrivate + " }"
 
 #Create repos
-source ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"" + domain + "\", \"private\": " + sourcePrivate + "  }' https://api.github.com/user/repos "
-stage ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"stage." + domain + "\", \"private\": " + stagePrivate + " }' https://api.github.com/user/repos "
-prod ="curl -i -H 'Authorization: token " + key + " ' -d '{ \"name\":\"www." + domain + "\", \"private\": " + prodPrivate + " }' https://api.github.com/user/repos "
-
-os.system(source)
-os.system(stage)
-os.system(prod)
+source = requests.post(gthUrl, headers=headers, data=repoPrivate)
+stage = requests.post(gthUrl, headers=headers, data=repoStage)
+prod = requests.post(gthUrl, headers=headers, data=repoProd)
 
 os.system(f"git config --global ghi.token {key}")
 
