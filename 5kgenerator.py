@@ -111,13 +111,11 @@ if theme:
 #Change CNAME files
 print('Creating CNAME files')
 def CNAMES():
-    f = with open("" + path + "/" "" + domain + "/" "CNAME", "w+")
-    f.write("www." + domain + "")
-    f.close()
+    with open("" + path + "/" "" + domain + "/" "CNAME", "w+") as f:
+        f.write("www." + domain + "")
 
-    f = with open("" + path + "/" "" + domain + "/" "CNAME.stage", "w+")
-    f.write("stage." + domain + "")
-    f.close()
+    with open("" + path + "/" "" + domain + "/" "CNAME.stage", "w+") as f:
+        f.write("stage." + domain + "")
 
 CNAMES()
 
