@@ -1,14 +1,15 @@
-import os
-import subprocess
 import git
-from git import Repo
-import sys
-import shutil
 import json
-import yaml
+import os
 import regex as re
 import requests
+import subprocess
+import shutil
 import stat
+import sys
+import yaml
+
+from git import Repo
 
 
 # Parsing
