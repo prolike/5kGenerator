@@ -153,8 +153,8 @@ def ciConfig():
     with open("" + path + "/" "" + domain + "/.circleci/config.yml", 'w') as file:
         file.write(filedata)
 
-#Add, commit and push template to source repo
 
+#Add, commit and push template to source repo
 def git_push():
     gitRepo = f'{path}/{domain}/'
     commitMSG = f'Copying {templateName} and {themeName} to {domain}'
