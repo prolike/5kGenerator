@@ -1,4 +1,5 @@
 #!/bin/sh
 docker run \
         -v $(pwd)/config.yml:/app/config.yml \
-        5kgenerator:local-build
+        prolike/5kgenerator:1.0.0
+        #5kgenerator:local-build

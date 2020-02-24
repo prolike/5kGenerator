@@ -17,3 +17,6 @@ repo:
   citoken: #your circle ci token. Leave empty if you desire to do this step manually
   cienvname: PHLOW_GHTOKEN #your circle ci environment name ussually PHLOW_GHTOKEN
   htmlproofer: #true or false. No ''
+  runningInDocker: #true or false based on if you are running this in a docker
+  label: #true or false wether you want to change the default github labels
+  

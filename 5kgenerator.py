@@ -28,7 +28,8 @@ def main():
     if circle:
         followci()
         addci()
-    labelSetup()
+    if label:
+        labelSetup()
 
 key = cfg['repo']['key']
 domain = cfg['repo']['domain']
@@ -48,6 +49,7 @@ htmlproofer = cfg['repo']['htmlproofer']
 theme = cfg['repo']['theme']
 circle = cfg['repo']['circle']
 runningInDocker = cfg['repo']['runningInDocker']
+label = cfg['repo']['label']
 
 def setup():
     os.system(f"git config --global ghi.token {key}")
@@ -155,7 +157,7 @@ def ciConfig():
 
 def git_push():
     gitRepo = f'{path}/{domain}/'
-    commitMSG = f'Copy {templateName} and {themeName} to {domain}'
+    commitMSG = f'Copying {templateName} and {themeName} to {domain}'
     try:
         if runningInDocker:
             os.system(f"git config --global user.email {email} ")
@@ -193,11 +195,8 @@ def addci():
 def labelSetup():
     st = os.stat('rm-gh-defaults.sh')
     os.chmod('rm-gh-defaults.sh', st.st_mode | stat.S_IEXEC)
-
     st = os.stat('mk-phlow-defaults.sh')
     os.chmod('mk-phlow-defaults.sh', st.st_mode | stat.S_IEXEC)
-
-
     subprocess.call(f"{os.path.abspath(os.getcwd())}/rm-gh-defaults.sh", cwd=f"{path}/{domain}/")
     subprocess.call(f"{os.path.abspath(os.getcwd())}/mk-phlow-defaults.sh", cwd=f"{path}/{domain}/")
 
