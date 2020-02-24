@@ -10,7 +10,8 @@ It requires [Docker](https://www.docker.com/) installed to run.
  - Get or create a circle ci api [token](https://circleci.com/account/api)
  - In your terminal navigate to where you cloned the repo
  - Create a config.yml or copy the template-config.yml
- - Use the template-config.yml as a guide to fill out the config but keep path to /app and cienvname to PHLOW_GHTOKEN
+ - Use the template-config.yml as a guide to fill out the config, but if you're using docker keep the path to /app and
+   cienvname to PHLOW_GHTOKEN
  - Once done, type in bash run.sh in your terminal to run the script
  - Clone the newly made repo and start working on it!
  
