@@ -31,6 +31,7 @@ def main():
         addci()
     if label:
         labelSetup()
+        
 
 key = cfg['repo']['key']
 domain = cfg['repo']['domain']
