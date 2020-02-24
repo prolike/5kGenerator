@@ -155,7 +155,6 @@ def ciConfig():
 
 ciConfig()
 
-
 #Add, commit and push template to source repo
 gitRepo = "" + path + "/" + domain +"/"
 commitMSG = f'Copy {templateName} and {themeName} to {domain}'
