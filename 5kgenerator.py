@@ -16,6 +16,7 @@ from git import Repo
 cfg = None
 with open('./config.yml', 'r') as f:
     cfg = yaml.load(f, Loader=yaml.FullLoader)
+    
 
 def main():
     setup()
